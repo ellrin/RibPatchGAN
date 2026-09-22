@@ -8,3 +8,7 @@ results/
 *.pt
 *.pth
 step1_rib_maskpoint_generation/weights/
+
+# local, machine-specific config copies
+configs/local.yaml
+configs/*.local.yaml

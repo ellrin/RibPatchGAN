@@ -40,8 +40,8 @@ step3_train_classifier_with_gan/
 pip install -r requirements.txt
 ```
 
-Edit `configs/default.yaml` → `datasets:` to point at your data. Each dataset
-folder must look like:
+Edit `configs/default.yaml` → `datasets:` to point at your data (the shipped
+paths are placeholders). Each dataset folder must look like:
 
 ```
 <images_root>/
@@ -74,7 +74,9 @@ several test sets. Each test entry chooses its operating point
 ```
 
 Env overrides (see each script header): `CONFIG`, `GAN_EPOCHS`, `CLS_EPOCHS`,
-`RESULTS_ROOT`, `RUN_GAN`/`RUN_CLS`/`RUN_TEST`.
+`RESULTS_ROOT`, `RUN_GAN`/`RUN_CLS`/`RUN_TEST`. To keep machine-specific paths
+out of git, copy `configs/default.yaml` to `configs/local.yaml` (git-ignored)
+and run with `CONFIG=configs/local.yaml`.
 
 ## Outputs
 

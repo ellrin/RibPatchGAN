@@ -18,17 +18,17 @@ paths:
 datasets:
   train:
     name: CGMH
-    images_root: /home/genius/projects/cxr/TMI/data/journal_split/train/CGMH
+    images_root: /path/to/data/train/CGMH
   valid:
     name: CGMH
-    images_root: /home/genius/projects/cxr/TMI/data/journal_split/valid/CGMH
+    images_root: /path/to/data/valid/CGMH
   tests:
     - name: CGMH
-      images_root: /home/genius/projects/cxr/TMI/data/journal_split/test/CGMH
+      images_root: /path/to/data/test/CGMH
       # operating point: Youden threshold tuned on the valid set
       threshold: youden_valid
     - name: padchest
-      images_root: /home/genius/projects/cxr/TMI/data/journal_split/test/padchest
+      images_root: /path/to/data/test/padchest
       # operating point: threshold giving spec ~= target_spec on this set's negatives
       threshold: spec_target
       target_spec: 0.90
