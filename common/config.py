@@ -37,7 +37,7 @@ class DatasetsConfig:
 @dataclass
 class PathsConfig:
     results_root: Path = Path("results")
-    site_stats: Path = Path("cgmh_stats.json")
+    site_stats: Path = Path("site_stats.json")
 
 
 # --- shared LaMa architecture ---------------------------------------------------

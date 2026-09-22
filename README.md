@@ -105,8 +105,10 @@ CSVs and rebuilds every metric table offline from them.
   requires a signed data use agreement; that repository gives the procedure.
   Step 2 and step 3 checkpoints are produced by running the pipeline on your
   own data; none are shipped here either.
-- The site-statistics file (`paths.site_stats`) is computed automatically from
-  the train set on first run; all datasets are standardized to it.
+- The site-statistics file (`paths.site_stats`) holds the train-set mean/std
+  used to standardize every dataset. It is **not** distributed here: it is
+  derived from private training data, and is computed from your own train set
+  on first run (`compute_site_statistics`).
 - Evaluation dataloaders are intentionally single-process (`num_workers=0`):
   multi-worker IPC leaked tens of GB of shared memory on large test sets.
 

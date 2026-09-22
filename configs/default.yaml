@@ -4,7 +4,7 @@
 
 paths:
   results_root: results            # relative paths resolve against the repo root
-  site_stats: cgmh_stats.json      # train-set mean/std for image normalization
+  site_stats: site_stats.json      # train-set mean/std, computed on first run
 
 # ---------------------------------------------------------------------------
 # Datasets. Each entry points at ONE folder with this layout:

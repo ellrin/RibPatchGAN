@@ -12,3 +12,7 @@ step1_rib_maskpoint_generation/weights/
 # local, machine-specific config copies
 configs/local.yaml
 configs/*.local.yaml
+
+# site statistics are derived from private training data - never commit them
+site_stats.json
+*_stats.json
