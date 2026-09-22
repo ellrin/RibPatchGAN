@@ -1,6 +1,11 @@
 # RibPatchGAN
 
 RibPatchGAN for Rib Fracture Detection on Chest Radiographs Using Patch Learning and Online Inpainting.
+
+![Overview of rib-aware online inpainting-assisted patch learning](fig/overview.png)
+
+Panels (I)–(III) correspond to the three steps below.
+
 Three steps:
 
 1. **Step 1 — rib maskpoint generation** (standalone):
