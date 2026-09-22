@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+results/
+*.log
+.ipynb_checkpoints/
+
+# no trained weights are distributed with this repo — see README "Notes"
+*.pt
+*.pth
+step1_rib_maskpoint_generation/weights/

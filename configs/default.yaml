@@ -1,0 +1,182 @@
+# RibPatchGAN v5 — single configuration file.
+# Edit the `datasets` paths to point at your own data, then run the scripts
+# under scripts/. Every step-2 / step-3 hyperparameter lives here.
+
+paths:
+  results_root: results            # relative paths resolve against the repo root
+  site_stats: cgmh_stats.json      # train-set mean/std for image normalization
+
+# ---------------------------------------------------------------------------
+# Datasets. Each entry points at ONE folder with this layout:
+#   <images_root>/
+#     fx/         fracture images (.png/.jpg)
+#     nofx/       normal images
+#     fxlabel/    labelme-style fracture bbox JSONs   (fx training/eval labels)
+#     maskpoint/  rib-point JSONs from step 1
+# `train` and `valid` are required; `tests` is a list with at least one entry.
+# ---------------------------------------------------------------------------
+datasets:
+  train:
+    name: CGMH
+    images_root: /home/genius/projects/cxr/TMI/data/journal_split/train/CGMH
+  valid:
+    name: CGMH
+    images_root: /home/genius/projects/cxr/TMI/data/journal_split/valid/CGMH
+  tests:
+    - name: CGMH
+      images_root: /home/genius/projects/cxr/TMI/data/journal_split/test/CGMH
+      # operating point: Youden threshold tuned on the valid set
+      threshold: youden_valid
+    - name: padchest
+      images_root: /home/genius/projects/cxr/TMI/data/journal_split/test/padchest
+      # operating point: threshold giving spec ~= target_spec on this set's negatives
+      threshold: spec_target
+      target_spec: 0.90
+
+# ---------------------------------------------------------------------------
+# Shared LaMa architecture (step 2 trains it; step 3 reloads the checkpoint,
+# so these must not change between the two steps).
+# ---------------------------------------------------------------------------
+lama:
+  ngf: 64
+  n_downsampling: 3
+  n_blocks: 9
+  ratio_g: 0.75
+  num_classes: 2
+  noise_dim: 64
+  fx_label: 1
+  mask_feather_radius: 4       # px of soft blending at the inpaint hole edge
+
+# ---------------------------------------------------------------------------
+# Step 2 — LaMa inpainting GAN on 128x128 rib patches.
+# ---------------------------------------------------------------------------
+gan_training:
+  use_nofx_training: true      # nofx patches join as source domain
+  force_generate_fx: true      # every generated sample is conditioned as fx
+  # geometry
+  image_size: 1024
+  patch_size: 128
+  mask_size: 84
+  mask_size_jitter: 5
+  patch_jitter: 6
+  patches_per_image: 8
+  max_patches_per_batch: 16
+  batch_size: 8
+  # whole-image augmentation
+  use_rot_aug: true
+  rot_aug_prob: 0.5
+  rot_max_deg: 10.0
+  use_clahe_aug: true
+  clahe_aug_prob: 0.5
+  clahe_base_clip: 3.0
+  clahe_clip_jitter: 1.5
+  clahe_tile_size: [8, 8]
+  # optimization (non-saturating GAN + lazy R1)
+  epochs: 300
+  g_lr: 0.0001
+  d_lr: 0.0001
+  adam_b1: 0.0
+  adam_b2: 0.99
+  r1_gamma: 10.0
+  d_reg_interval: 16
+  # generator loss weights
+  lambda_rec: 10.0             # L1 inside the mask, fx sources only
+  lambda_vgg: 1.5              # VGG perceptual + style, fx sources only
+  lambda_context: 1.0          # L1 outside the mask, all sources
+  lambda_seam: 0.5             # intensity/gradient continuity at the mask edge
+  seam_loss_width: 4
+
+# ---------------------------------------------------------------------------
+# Step 3 — patch classifier with GAN augmentation + cooperative G feedback.
+# ---------------------------------------------------------------------------
+classifier:
+  model:
+    encoder: convnext_tiny
+    pretrained: true
+    dropout: 0.4
+
+  train:
+    seed: 42
+    epochs: 10
+    batch_size: 4
+    num_workers: 4
+    lr: 0.0001
+    weight_decay: 0.001
+    amp: true
+    grad_clip: 1.0
+    warmup_epochs: 1
+    image_size: 1024
+    patch_size: 224
+    patch_forward_chunk_size: 12
+    eval_patch_chunk_size: 24
+    # augmentation
+    use_rot_aug: true
+    rot_aug_prob: 0.5
+    rot_max_deg: 15.0
+    use_rotate_scale_aug: true
+    use_clahe_aug: true
+    clahe_aug_prob: 0.5
+    clahe_base_clip: 2.0
+    clahe_clip_jitter: 0.5
+    clahe_tile_size: [8, 8]
+    use_intensity_aug: true
+    bright_aug_range: 0.10
+    contrast_aug_range: 0.10
+    resample_aug_scale: 0.15
+    resample_aug_prob: 0.50
+    topk_k: 3                    # eq. s(x): mean of the top-3 patch probabilities
+    # smoke-test caps (0 = no cap)
+    max_train_batches: 0
+    max_eval_batches: 0
+
+  loss:
+    # fg/bg pooled BCE with a valid-Youden feedback controller on the weights
+    w_fg: 1.0
+    w_bg: 1.0
+    use_dynamic_weight: true
+    dyn_weight_eta: 1.0
+    dyn_weight_min: 0.5
+    dyn_weight_max: 5.0
+    target_sen: 0.70
+    target_spec: 0.80
+
+  sampling:
+    bag_size: 16
+    pos_per_bag: 6
+    neg_per_bag: 10
+    patch_jitter: 24
+    fx_exclusion_radius: 224
+    pos_bbox_overlap_thresh: 0.05
+    use_fx_balanced_batches: true
+    fx_bags_per_batch: 2
+
+  gan_augmentation:
+    # stage-2 generator checkpoint; empty = <results_root>/step2_inpainting_gan/checkpoints/G_latest.pt
+    checkpoint_path: ""
+    # paste geometry (must match step-2 training)
+    gan_patch_size: 128
+    mask_size: 84
+    mask_size_jitter: 5
+    # synthetic-positive stream: fx-centred re-inpainting + smaller nofx->fx
+    # counterfactual stream; fractions anneal linearly to *_end over the run
+    use_fake: true
+    fake_start_epoch: 1
+    fake_fraction: 0.30
+    fake_fraction_end: 0.15
+    counterfactual_fraction: 0.10
+    counterfactual_fraction_end: 0.05
+    # additive supervision: L_cls = L_real + alpha * L_fake
+    alpha: 0.25
+    # EMA teacher (feature encoder for G feedback + eval/checkpoint network)
+    ema_m: 0.99
+    ema_student_for_eval: true
+    # cooperative G feedback (distribution-stable; no adversarial objective)
+    active_g: true
+    g_update_start_epoch: 4
+    g_lr: 0.000001
+    g_update_interval: 10        # one G step every K classifier steps
+    g_grad_clip: 0.05
+    lambda_m: 0.01                # DSR mean-matching weight
+    lambda_v: 0.01                # DSR variance-matching weight
+    lambda_f: 0.001               # DSR variance-floor weight
+    lambda_r: 0.10                # L_G = L_DSR + lambda_r * L_G^recon
