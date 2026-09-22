@@ -112,7 +112,7 @@ def compute_eval_metrics(
     cfg,
 ) -> Dict[str, float]:
     """Patch-level metrics plus top-k image-level aggregation (eq. s(x)),
-    overall and per site (prefix `<site>_`)."""
+    overall and per site (prefix <site>_)."""
     out: Dict[str, float] = {}
     targets_per_site = {"__all__": list(range(len(bag_probs)))}
     if sites is not None:

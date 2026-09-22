@@ -142,7 +142,7 @@ def min_dist_to_bbox(x: float, y: float, bboxes) -> float:
 
 
 def crop_patch(img: np.ndarray, center: Tuple[int, int], patch_size: int) -> np.ndarray:
-    """Extract a patch centred at `center`, replicating missing edge pixels."""
+    """Extract a patch centred at center, replicating missing edge pixels."""
     half = patch_size // 2
     cx, cy = center
     h, w = img.shape[:2]

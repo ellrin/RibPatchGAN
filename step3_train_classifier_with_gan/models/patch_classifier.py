@@ -2,7 +2,7 @@
 
 forward() takes a FLAT batch of patches (N_total, C, H, W) and chunks the
 encoder forward to bound activation memory; callers reconstruct per-image
-bags via `n_patches`.
+bags via n_patches.
 """
 from __future__ import annotations
 

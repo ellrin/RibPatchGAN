@@ -21,7 +21,7 @@ class CXRItem:
 
 def build_items(spec: DatasetSpec) -> List[CXRItem]:
     """One item per image under <images_root>/{nofx,fx}; fxlabel/maskpoint
-    JSONs are attached when present. Item `site` is the dataset name."""
+    JSONs are attached when present. Item site is the dataset name."""
     base = Path(spec.images_root)
     items: List[CXRItem] = []
     for cls_name, label in (("nofx", 0), ("fx", 1)):

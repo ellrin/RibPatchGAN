@@ -1,7 +1,7 @@
 """Patch dataset for classifier training/evaluation.
 
 Train (fx image): positives at fx-bbox centers (+jitter); negatives from rib
-maskpoints at least `fx_exclusion_radius` px from every fx bbox.
+maskpoints at least fx_exclusion_radius px from every fx bbox.
 Train (nofx image): all negatives from rib maskpoints.
 Eval: every rib maskpoint becomes a patch; the label is positive when the
 patch/bbox overlap fraction >= pos_bbox_overlap_thresh.

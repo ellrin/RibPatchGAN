@@ -1,6 +1,6 @@
 """Patch-level dataset for inpainting-GAN training.
 
-Each item is one CXR; it yields up to `patches_per_image` 128x128 patches
+Each item is one CXR; it yields up to patches_per_image 128x128 patches
 (fracture-centred positives + rib-point negatives) plus a per-patch centered
 square inpainting mask with size jitter. The collate function balances and
 caps the patch pool per batch.

@@ -1,7 +1,7 @@
 """Wrapper around the step-2 LaMa generator for patch inpainting.
 
 GAN input range is [0, 1] (NOT classifier-normalized): callers un-normalize
-before `generate_patch` and re-normalize after (see paste.py).
+before generate_patch and re-normalize after (see paste.py).
 """
 from __future__ import annotations
 

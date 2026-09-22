@@ -5,7 +5,7 @@ Per batch:
   * real-patch BCE (fg/bg pooled, dynamic weights) stays intact;
   * generated fx patches (mixed_pos paste from the step-2 LaMa G) add a
     low-weight auxiliary BCE;
-  * every `g_update_interval` steps (from `g_update_start_epoch`) G takes one
+  * every g_update_interval steps (from g_update_start_epoch) G takes one
     distribution-stable step against the frozen EMA teacher.
 
 Checkpoint selection: valid-set image-topk AUC of the EMA teacher.
