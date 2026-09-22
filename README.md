@@ -96,9 +96,11 @@ CSVs and rebuilds every metric table offline from them.
 - No trained weights are distributed with this repository.
   `step1_rib_maskpoint_generation/` contains only the rib-segmenter
   *inference* code; train your own U-Net rib segmenter on the public
-  [VinDr-RibCXR](https://vindr.ai/datasets/ribcxr) dataset (merge its 20
-  per-rib annotations into one binary mask, as described in the paper) and
-  place the checkpoint at `step1_rib_maskpoint_generation/weights/weight.pt`.
+  [VinDr-RibCXR](https://github.com/vinbigdata-medical/MIDL2021-VinDr-RibCXR)
+  dataset (merge its 20 per-rib annotations into one binary mask, as described
+  in the paper) and place the checkpoint at
+  `step1_rib_maskpoint_generation/weights/weight.pt`. Access to VinDr-RibCXR
+  requires a signed data use agreement; that repository gives the procedure.
   Step 2 and step 3 checkpoints are produced by running the pipeline on your
   own data; none are shipped here either.
 - The site-statistics file (`paths.site_stats`) is computed automatically from
